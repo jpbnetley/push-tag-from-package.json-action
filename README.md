@@ -8,8 +8,8 @@ Requires the following actions to be added to the workflow
 
 ## Permissions
 ```yml
- permissions:
-    contents: write
+permissions:
+  contents: write
 ```
 
 ## Inputs
