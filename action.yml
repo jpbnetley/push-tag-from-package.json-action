@@ -43,6 +43,7 @@ runs:
         
     - name: Set git user
       shell: bash
+      if: steps.tag.outputs.TAG_EXISTS == 'false'
       run: |
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"

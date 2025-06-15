@@ -32,3 +32,42 @@ success:
   description: 'Indicates whether the tag was successfully pushed'
   value: ${{ steps.tag.outputs.TAG_EXISTS == 'false' }}
 ```
+
+## Example
+```yml
+name: Tag Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - main
+
+env:
+  node_version: 22
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  
+jobs:
+  
+  build-and-publish-tag:
+    name: Create and push tag
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: pnpm/action-setup@v4
+
+    - name: Use Node.js ${{ env.node_version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.node_version }}
+
+    - name: Push tag
+      uses: jpbnetley/push-tag-from-package.json-action@main
+     
+```
