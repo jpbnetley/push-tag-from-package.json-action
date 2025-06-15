@@ -1,0 +1,51 @@
+name: 'push tag from package.json action'
+description: 'pushes a tag form the version field in the package.json'
+inputs:
+  package_json_path:
+    description: 'the path to the package.json file to read the version from'
+    required: false
+    default: './package.json'
+outputs:
+  tag_exists:
+    description: 'Indicates whether the tag exists'
+    value: ${{ steps.tag.outputs.TAG_EXISTS }}
+  tag_name:
+    description: 'The name of the tag that was pushed'
+    value: ${{ steps.package.outputs.version }}
+  success:
+    description: 'Indicates whether the tag was successfully pushed'
+    value: ${{ steps.tag.outputs.TAG_EXISTS == 'false' }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Get version from package.json
+      id: package
+      run: |
+        version=$(node -p "require('./package.json').version")
+        echo "version from package json: $version"
+        echo "version=$version" >> $GITHUB_OUTPUT
+
+    - name: Get git remote tag
+      id: tag
+      run: |
+        git fetch --tags
+        remoteTag=$(git tag --list "${{ steps.package.outputs.version }}")
+        if [ -z "$remoteTag" ]; then
+          echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
+          echo "No existing tag found for version: ${{ steps.package.outputs.version }}"
+        else
+          echo "TAG_EXISTS=true" >> $GITHUB_OUTPUT
+          echo "Existing tag found: $remoteTag"
+        fi
+        
+    - name: Set git user
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+
+    - name: Push git tags
+      if: steps.tag.outputs.TAG_EXISTS == 'false'
+      run: |
+        git tag ${{ steps.package.outputs.version }}
+        git push origin ${{ steps.package.outputs.version }}
