@@ -21,6 +21,7 @@ runs:
   steps:
     - name: Get version from package.json
       id: package
+      shell: bash
       run: |
         version=$(node -p "require('./package.json').version")
         echo "version from package json: $version"
@@ -28,6 +29,7 @@ runs:
 
     - name: Get git remote tag
       id: tag
+      shell: bash
       run: |
         git fetch --tags
         remoteTag=$(git tag --list "${{ steps.package.outputs.version }}")
@@ -40,11 +42,13 @@ runs:
         fi
         
     - name: Set git user
+      shell: bash
       run: |
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
 
     - name: Push git tags
+      shell: bash
       if: steps.tag.outputs.TAG_EXISTS == 'false'
       run: |
         git tag ${{ steps.package.outputs.version }}

@@ -3,7 +3,7 @@
 
 ## Pre-requisites
 Requires the following actions to be added to the workflow
-- actions/setup-node@v4
+- actions/checkout@v4
 - actions/setup-node@v4
 
 ## Permissions
