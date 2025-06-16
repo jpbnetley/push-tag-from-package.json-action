@@ -71,3 +71,6 @@ jobs:
       uses: jpbnetley/push-tag-from-package.json-action@main
      
 ```
+
+## Ref
+- https://github.com/jpbnetley/test-push-tag-from-package.json
